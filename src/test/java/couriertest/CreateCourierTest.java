@@ -1,33 +1,25 @@
-package courierTest;
+package couriertest;
 
+import base.BaseTest;
 import courier.Courier;
 import courier.CourierDataForTest;
 import courier.CourierStepMethods;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import static constants.ApiConstants.SCOOTER_URL;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-//Класс тестов для проверки создания курьеров через API
-public class CreateCourierTest {
+public class CreateCourierTest extends BaseTest {
     private final CourierDataForTest courierDataForTest = new CourierDataForTest();
     String id = null;
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = SCOOTER_URL;
-    }
 
     @Test
     @DisplayName("Создание курьера")
     @Description("Создание курьера с валидно заполненными полями")
-    public void createCourier () {
+    public void createCourier() {
         Courier courier = new Courier(courierDataForTest.getExistingLogin(), courierDataForTest.getExistingPassword(), courierDataForTest.getFirstName());
         Response response = CourierStepMethods.createCourier(courier);
         id = CourierStepMethods.loginCourier(courier)
@@ -41,12 +33,12 @@ public class CreateCourierTest {
     @Test
     @DisplayName("Создание курьера без логина")
     @Description("Создание курьера только с паролем и именем")
-    public void createCourierWithoutLogin () {
+    public void createCourierWithoutLogin() {
         Courier courier = new Courier("", courierDataForTest.getExistingPassword(), courierDataForTest.getFirstName());
         Response response = CourierStepMethods.createCourier(courier);
         response.then().assertThat().statusCode(400)
                 .and()
-                .assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"));
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -57,7 +49,7 @@ public class CreateCourierTest {
         Response response = CourierStepMethods.createCourier(courier);
         response.then().assertThat().statusCode(400)
                 .and()
-                .assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"));
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -70,7 +62,7 @@ public class CreateCourierTest {
         id = CourierStepMethods.loginCourier(courier).then().extract().path("id").toString();
         response.then().assertThat().statusCode(409)
                 .and()
-                .assertThat().body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
+                .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
     @After
